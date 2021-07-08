@@ -40,14 +40,67 @@ alias gap="git add -p"
 alias gcm="git commit -m $1"
 alias gp="git push"
 alias brspec="bin/rspec"
-alias api-core="cd /Users/romualdescande/code/matera/api-core"
-alias api-hubspot="cd /Users/romualdescande/code/matera/api-hubspot"
-alias api-public="cd /Users/romualdescande/code/matera/api-public"
-alias api-banking="cd /Users/romualdescande/code/matera/api-banking"
-alias app-core="cd /Users/romualdescande/code/matera/app-core"
-alias app-admin="cd /Users/romualdescande/code/matera/app-admin"
-alias app-public="cd /Users/romualdescande/code/matera/app-public"
-alias matera-utils="cd /Users/romualdescande/code/matera/matera-utils"
-alias npm-packages="cd /Users/romualdescande/code/matera/npm-packages"
+alias api-core="cd ~/code/romusc/matera/api-core"
+alias api-hubspot="cd ~/code/romusc/matera/api-hubspot"
+alias api-banking="cd ~/code/romusc/matera/api-banking"
+alias app-core="cd ~/code/romusc/matera/app-core"
+alias app-admin="cd ~/code/romusc/matera/app-admin"
+alias app-public="cd ~/code/romusc/matera/app-public"
+alias matera-utils="cd ~/code/romusc/matera/matera-utils"
+alias npm-packages="cd ~/code/romusc/matera/npm-packages"
 alias kapi-core="kubectl exec -n api-core-production -i -t \$(kubectl get pod -n api-core-production -l app=api-core-rails -o name) -- bash"
 alias kapi-hubspot="kubectl exec -n api-hubspot-production -i -t \$(kubectl get pod -n api-hubspot-production -l app=api-hubspot-rails -o name) -- bash"
+
+alias start-api-core="cd ~/code/romusc/matera/api-core && git pull origin development && bundle install && rails db:migrate && rails s"
+alias start-api-hubspot="cd ~/code/romusc/matera/api-hubspot && git pull origin development && bundle install && rails db:migrate && rails s"
+alias start-app-core="cd ~/code/romusc/matera/app-core && yarn start"
+alias start-app-admin="cd ~/code/romusc/matera/app-admin && yarn start"
+alias start-app-public="cd ~/code/romusc/matera/app-public && git pull origin development && yarn && gatsby clean && gatsby develop"
+alias start-app-public-serve="cd ~/code/romusc/matera/app-public && git pull origin development && yarn && gatsby clean && gatsby serve"
+
+# I have removed the git reset hard from Roger's script for security
+# alias start-api-banking="cd ~/code/romusc/matera/api-banking && git reset --hard && git pull origin development && bundle install && rails db:migrate && rails s"
+
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+function iterm () {
+    local cmd=""
+    local wd="$PWD"
+    local args="$@"
+    if [ -d "$1" ]; then
+        wd="$1"
+        args="${@:2}"
+    fi
+    if [ -n "$args" ]; then
+        # echo $args
+        cmd="; $args"
+    fi
+    osascript &>/dev/null <<EOF
+        tell application "iTerm2"
+          tell current window
+            create tab with default profile
+            tell current session of current tab
+              delay 1
+              write text "cd $wd$cmd"
+            end tell
+          end tell
+        end tell
+EOF
+}
+alias start-matera="pkill -9 ruby; iterm start-api-core && iterm start-api-hubspot && iterm start-app-core && iterm start-app-admin"
