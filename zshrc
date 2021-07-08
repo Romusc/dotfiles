@@ -56,7 +56,7 @@ alias start-api-hubspot="cd ~/code/romusc/matera/api-hubspot && git pull origin 
 alias start-app-core="cd ~/code/romusc/matera/app-core && yarn start"
 alias start-app-admin="cd ~/code/romusc/matera/app-admin && yarn start"
 alias start-app-public="cd ~/code/romusc/matera/app-public && git pull origin development && yarn && gatsby clean && gatsby develop"
-alias start-app-public-serve="cd ~/code/romusc/matera/app-public && git pull origin development && yarn && gatsby clean && gatsby serve"
+alias serve-app-public="yarn && gatsby clean && gatsby build && gatsby serve"
 
 # I have removed the git reset hard from Roger's script for security
 # alias start-api-banking="cd ~/code/romusc/matera/api-banking && git reset --hard && git pull origin development && bundle install && rails db:migrate && rails s"
